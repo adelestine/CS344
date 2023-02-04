@@ -9,13 +9,11 @@
 
 
 //imported from other spaces
-
-
-
-
-
-
-
+//Flushed input buffer
+void flushStdin(void) {
+	int ch;
+	while (((ch = getchar()) != '\n') && (ch != EOF));
+}
 
 /* struct for movie information */
 struct movie
@@ -27,7 +25,7 @@ struct movie
     int             Year;
     struct movie *  next;
 };
-
+// Chops the languages up into an array format parseable to the program
 void cutLangs(struct movie * currMovie, char * token){
     int tokenLenght;
     int numberOfLangs = 0;
@@ -35,25 +33,33 @@ void cutLangs(struct movie * currMovie, char * token){
     char * tokOftok = strtok_r(token, ";", &savePtr);
     while (tokOftok != NULL && numberOfLangs < 5)
     {
-        currMovie->Lang[numberOfLangs] = calloc(strlen(tokOftok)+1, sizeof(currMovie->Lang[numberOfLangs]));
-        tokenLenght = strlen(token) -1;
+        tokenLenght = strlen(tokOftok) -1;
         if(tokOftok[0] == '[' && tokOftok[tokenLenght] == ']'){
             //only 1 entry
             //remove ends
+            
             tokOftok[tokenLenght] = '\0';
             for (int i = 0; i < tokenLenght-1; i++)
             {
                 tokOftok[i] = tokOftok[i+1];
             }
+            tokenLenght -= 1;
+            tokOftok[tokenLenght] = '\0';
+            
         }else if(tokOftok[0] == '['){
             for (int i = 0; i < tokenLenght; i++)
             {
                 tokOftok[i] = tokOftok[i+1];
                 //printf("%c", tokOftok[i]);
             }
+            tokOftok[tokenLenght] = '\0';
+            //printf("Length of tokoftok: %d for Token: %s\n", tokenLenght, tokOftok);
+
         }else if(tokOftok[tokenLenght] == ']'){
             tokOftok[tokenLenght] = '\0';
+            tokenLenght -= 1;
         }
+        currMovie->Lang[numberOfLangs] = calloc(tokenLenght+1, sizeof(currMovie->Lang[numberOfLangs]));
         strcpy(currMovie->Lang[numberOfLangs], tokOftok);
         numberOfLangs +=1;
         tokOftok = strtok_r(NULL, ";", &savePtr);
@@ -208,13 +214,27 @@ void getYear(int YearGiven, struct movie *head){
     
 }
 void lang(struct movie * head){
+    printf("Enter the language for which you want to see movies: ");
+    char usrIn[21];
+    flushStdin();
+    scanf("%s", usrIn);
+    printf("%s\n" , usrIn);
     while (head != NULL)
     {
-        for (int i = 0; i <= head->numberOfLangs-1; i++)
+        // printf("%s : ", head->Title);
+        // for (int i = 0; i < head->numberOfLangs; i++)
+        // {
+        //     printf("%s", head->Lang[i]);
+        // }
+        // printf("\n");
+        for (int i = 0; i < head->numberOfLangs; i++)
         {
-            if (strcmp(head->Lang[i] , "English"))
+            //printf("%s :: Swedish = %d\n", head->Lang[i], (strcmp(head->Lang[i] , "Swedish")));
+            if (strcmp(head->Lang[i] , usrIn) == 0)
             {
-                /* code */
+                
+                printf("%s %d\n", head->Title, head->Year);
+                break;
             }
             
         }
@@ -225,152 +245,54 @@ void lang(struct movie * head){
     
     
 }
-// void queryRating(struct movie *head){
-//     struct movie * lookingAt;
-//     struct movie* top = head;
-//     lookingAt = head;
-//     int* processedYears;
-//     int size = 130;
-//     int i;
-//     processedYears = (int*)calloc(size,sizeof(int));
-//     while (lookingAt != NULL)
-//     {
-//         for(i = 0; i < size; i++){
-//             while(1){
-//                 if(processedYears[i] == lookingAt->Year){
-//                     lookingAt = lookingAt->next;
-//                     i = 0;
-//                 }else{
-//                     break;
-//                 } 
-//         }
-//     }
-//     head = top;
-//     while(head != NULL){
-//         if((head->Rating > lookingAt->Rating) && (head->Year == lookingAt->Year)){
-//             lookingAt = head;
-//         }
-//         head = head->next;
-//     }
+void queryRating(struct movie * lst){
+    struct movie * head = lst;
+    struct movie * sel = lst;
+    int * yearsPrinted ;
+    yearsPrinted = (int*) calloc(125, sizeof(int));  
+      //int year = 2008;
+    int yearAlreadyPritnedFlag = 0;
+    for (int i = 0; (i < 125) && (lst != NULL); i++)
+    {
+        //printf("? %d\n", head->Year);
+        while (head != NULL)
+        {
+            for (int j = 0; j < 125; j++)
+            {
+                //printf("%d",yearsPrinted[j]);
+                //printf("%d :: %d --> %d\n", yearsPrinted[j], head->Year, (yearsPrinted[j] == head->Year));
+                if (yearsPrinted[j] == lst->Year)
+                { 
+                    yearAlreadyPritnedFlag = 1;
+                    //printf("year already printed : %d ? %d\n",yearsPrinted[j], head->Year);
+                }
+            }
+            //printf(":: %d\n",i);
 
-    
-//     //printf("%d %.1f %s \n", lookingAt->Year, lookingAt->Rating, lookingAt->Title);
-//     int j;
-//     for (j = 0; j < size; j++)
-//     {
-//         printf("data @ %d, :%d\n", j, processedYears[size-1]);
-
-//     }
-    
-//     processedYears[size-1] = lookingAt->Year;
-//     //printf("\n%d\n", processedYears[size-1]);
-//     //size++;
-//     }
-    
-
-
-
-
-
-
-//     //grab 1st Title, then compare agiant everything
-//     // printf("0");
-//     // struct movie* tmp; 
-//     // struct movie* top = head;
-//     // int YearCurrent = 0;
-//     // 
-//     // 
-//     // int j = 0;
-//     // int exit = 0;
-//     // printf("1");
-//     // while (exit != 1)
-//     // {
-//     //      printf("2");
-         
-//     //      processedYears = (int*)calloc(size,sizeof(int));
-//     //      head = top;
-//     //      tmp = head;
-         
-//     //     while (YearCurrent != 0)
-//     //     {
-//     //         break;
-//     //         if (tmp->Year == processedYears[j] && processedYears[j] != 0 && tmp->next == NULL)
-//     //         {
-//     //             exit = 1;
-//     //             break;
-//     //         }else if(tmp->Year == processedYears[j] && processedYears[j] != 0 ){
-//     //             tmp = tmp->next;
-//     //             j++;
-//     //         }else{
-//     //             YearCurrent = 0;
-//     //         }
+            //printf("%d :: %d\n", lst->Year, head->Year);
+            if(head->Year == lst->Year && sel->Rating <= head->Rating){
+                sel = head;
+                //printf("%s\n", sel->Title);
+                
+            }
             
-//     //     }
-//     //      if(exit ==1){
-//     //          break;
-//     //      }
-//     //     YearCurrent = tmp->Year;
-//     //     while (head != NULL)
-//     //     {
-//     //         if((head->Rating > tmp->Rating) && (head->Year == tmp->Year)){
-//     //             tmp = head;
-//     //         }
-//     //     }
-//     //     printf("%d %.1f %s \n", tmp->Year, tmp->Rating, tmp->Title);
-//     //     processedYears[size-1] = tmp->Year;
-//     //     size++;
-//     //     j++;
-//     // }
-    
-
-
-//     // //grab first Title, look at Year, 
-//     // //search all others for if they have a better Rating and same Year
-//     // //print
-//     free(processedYears);
-// }
-/*
-*   Process the file provided as an argument to the program to
-*   create a linked list of movie structs and print out the list.
-*   Compile the program as follows:
-*       gcc --std=gnu99 -o movies main.c
-*/
-// void lang(struct movie *head){
-//     char * saveptr;
-//     char * tok =  strtok_r(head->Lang, ";[]", &saveptr);
-//     char usrInLang[21];
-//     printf("Enter the language for which you want to see movies:\n");
-//     int c;
-//     while ((c = getchar()) != '\n' && c != EOF);
-//     scanf("%20[^\n]", usrInLang);
-
-
-//     while (head->next != NULL)
-//     {   
-//         //temp = strcmp(tok, usrInLang);
-//         //printf("Test1: %d == %s\n", strcmp(tok,usrInLang), usrInLang);
+            //printf("%s %0.1f:: %s %0.1f\n", head->Title, head->Rating, sel->Title, sel->Rating);
+            head = head->next;
+        }
         
-//         printf("%d, %s", strlen(tok), tok);
-//         tok = strtok_r(NULL,";",&saveptr);
-//         // printf("%d, %s", strlen(tok), tok);
-//         // tok = strtok_r(NULL, ";[]", &saveptr);
-//         // printf("%d, %s", strlen(tok), tok);
-//         // tok = strtok_r(NULL, ";[]", &saveptr);
-//         // printf("%d, %s", strlen(tok), tok);S
-//         // while(strlen(tok) != ){
-//         //     if(strcmp(tok, usrInLang) == 0){
-//         //         printf("%d %s \n", head->Year, head->Title);
-//         //     }
-//         // tok = strtok_r(head->Lang, ";[]", &saveptr);
-//         // }
-            
+        if (yearAlreadyPritnedFlag == 0)
+        {
+            printf("%d %0.1f %s\n", sel->Year, sel->Rating, sel->Title);
+            yearsPrinted[i] = sel->Year;
+        }
 
-
-//         head = head->next;
-
-//     }
-    
-// }
+        lst = lst->next;
+        head = lst;
+        sel = lst;
+        yearAlreadyPritnedFlag = 0;
+    }
+    free(yearsPrinted);
+}
 
 
 
@@ -404,7 +326,7 @@ int main(int argc, char *argv[])
             getYear(usrIn,list);
             break;
         case 2: //Show highest rated movie for each Year
-            //queryRating(list);
+            queryRating(list);
             break;
         case 3: //Show the Title and Year of release of all movies in a specific language
             lang(list);
@@ -418,7 +340,7 @@ int main(int argc, char *argv[])
             break;
         }
     }
-    freeMovies(list);
+    //freeMovies(list);
     //TODO: Test Outcome
     
     return EXIT_SUCCESS;
