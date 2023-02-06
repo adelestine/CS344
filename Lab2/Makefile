@@ -3,6 +3,8 @@ compile:
 	gcc --std=gnu99 -g -o output main.c
 clean:
 	@echo "Cleaning up..."
+	rm -f output
+	rm -r delestic.movies.*
 valgrind:
 	@echo "Running with valgrind"
 	valgrind ./movies movies_sample_1.csv
