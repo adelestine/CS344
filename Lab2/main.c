@@ -34,23 +34,22 @@ void flushStdin(void) {
 }
 void findLargestFile(char * output, struct file * head){
     struct file * current = head;
-    struct file * largest = head;
+    struct file * largest = NULL;
+    int first = 0;
     //read the file names and sizes into a linked list
     while (current != NULL)
     {
         if (strstr(current->name, ".csv") != NULL && strstr(current->name, "movies_") != NULL)
         {
-
-            printf("File name: %s\n", current->name);
-            if (current->size > largest->size)
-            {
+            if(first == 0){
+                largest = current;
+                first = 1;
+            }else if(current->size > largest->size){
                 largest = current;
             }
-            
         }
         current = current->next;
     }
-    //printf("Largest file is %s\n", largest->name);
     processFile(largest);
     //traverse the linked list and find the largest file
     //find the largest file in the directory
@@ -209,7 +208,7 @@ void processFile(struct file * file){
     struct movie * currMovie = top;
   
     //create directory titled delestic.movies.randomNumber
-    int dirNum = rand() % 100000; //random number between 0 and 99999
+    int dirNum = random() % 100000; //random number between 0 and 99999
     char * dirName = calloc(30, sizeof(char)); //TODO: FIX MEM LEAK
     sprintf(dirName, "delestic.movies.%d", dirNum);    //premessions of the file must be set to rwxr-x---
     // ie the owner has read, write, and execute permissions, the group has read and execute permissions, and others have no permissions
@@ -287,9 +286,9 @@ struct file * loadFileList(DIR * cwd){
     struct file * head = NULL; //head of the linked list
     while (entry=readdir(cwd)) //read the directory
     {
-        if (entry->d_type == DT_REG) //if the entry is a regular file
-        {
-            struct file * newFile = malloc(sizeof(struct file)); //create a new file // TODO: FIX MEM LEAK
+        if (entry->d_type == DT_REG /*&& (strstr(entry->d_name, ".csv") != NULL) && (strstr(entry->d_name, "movies_") != NULL)*/) //if the entry is a regular file
+        {  
+            struct file * newFile = malloc(sizeof(struct file)); //create a new file 
             newFile->name = entry->d_name;                     //set the name
             stat(newFile->name, &statbuf);                     //get the size
             newFile->size = statbuf.st_size;                    //set the size
@@ -317,22 +316,42 @@ struct file * loadFileList(DIR * cwd){
 void findSmallestFile(char * output, struct file * head){
     //find the smallest file and return the name
     struct file * current = head;
-    struct file * smallest = head;
-    //printf("Current File: %s\n", current->name);
+    struct file * smallest = NULL;
+    int first = 0;
     while (current != NULL)
     {
-        if(strstr(current->name, ".csv") != NULL && strstr(current->name, "movies_") != NULL){
+        if((strstr(current->name, ".csv") != NULL) && (strstr(current->name, "movies_") != NULL)){
             printf("%s\n", current->name);
-            if (current->size < smallest->size){
-            smallest = current;
+            if (first == 0)
+            {
+                smallest = current;
+                first = 1;
+            }else if (current->size < smallest->size)
+            {
+                smallest = current;
             }
-            
-        }
+       }
         current = current->next;
     }
     printf("Smallest File: %s\n", smallest->name);
     processFile(smallest);
     strcpy(output, smallest->name);
+}
+void findFileWithName(char * output, struct file * head, char * name){
+    //find the file with the name and return the name
+    struct file * current = head;
+    while (current != NULL)
+    {
+        if (strcmp(current->name, name) == 0)
+        {
+            strcpy(output, current->name);
+            processFile(current);
+            break;
+        }
+        current = current->next;
+    }
+    strcpy(output, "File Not Found");
+    
 }
 void freeall(struct file * head){
     struct file * current = head;
@@ -360,14 +379,6 @@ int main(int argc, char *argv[])
     }
     struct file * head = loadFileList(cwd); //load the file list //PRESERVE!!!
 
-    //print the file list
-
-    struct file * current = head;
-    while (current != NULL)
-    {
-        printf("Name: %s\tSize: %d\n", current->name, current->size);
-        current = current->next;
-    }
 
     while (exit == 0) //main loop for selector
     {
@@ -375,7 +386,6 @@ int main(int argc, char *argv[])
         if (strcmp(usrIn, "1") == 0) //if user selects 1
         {
             printMenu(2, usrIn); //print file selector menu and save in usrIn
-            printf("usrIn: %s\n",usrIn);
             if (strcmp(usrIn, "1") == 0) //if user selects 1
             {
                 //pick the largest file
@@ -388,7 +398,14 @@ int main(int argc, char *argv[])
             }
             else if (strcmp(usrIn, "3") == 0) //if user selects 3
             {
-                //pick the specified file
+                //pick a file by name
+                printf("Please enter the name of the file you would like to process: ");
+                scanf("%s", usrIn);
+                findFileWithName(name, head, usrIn);
+                if (strcmp(name, "File Not Found") == 0)
+                {
+                    printf("File Not Found\n");
+                }
             }
             else
             {
