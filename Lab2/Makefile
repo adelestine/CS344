@@ -7,7 +7,11 @@ clean:
 	rm -r delestic.movies.*
 valgrind:
 	@echo "Running with valgrind"
-	valgrind ./movies movies_sample_1.csv
+	valgrind ./output
+all:
+	@echo "Compiling and running with valgrind"
+	gcc --std=gnu99 -g -o output main.c
+	valgrind ./output
 zip:
 	@echo "zipping :] good luck on your grade :]"
-	zip delestic_program1 Makefile main.c header.h readme.txt
+	zip delestic_program2 Makefile main.c header.h readme.txt
