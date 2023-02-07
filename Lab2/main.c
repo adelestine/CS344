@@ -213,7 +213,7 @@ void processFile(struct file * file){
     sprintf(dirName, "delestic.movies.%d", dirNum);    //premessions of the file must be set to rwxr-x---
     // ie the owner has read, write, and execute permissions, the group has read and execute permissions, and others have no permissions
     #ifdef __linux__                        
-    mkdir(dirName, 750); // rwxr-x---
+    mkdir(dirName, 0750); // rwxr-x---
     #elif _WIN32
     mkdir(dirName);
     #endif
@@ -224,10 +224,12 @@ void processFile(struct file * file){
     int years[movieNum];
 
     char * fileName = calloc(30, sizeof(char));
+    &fileName = NULL;
     sprintf(fileName, "%s/%d.txt", dirName, currMovie->Year);  //funky stuff  
     FILE * yearFile = fopen(fileName, "w");
     fprintf(yearFile, "%s\n", currMovie->Title);
     fclose(yearFile);
+    chmod(fileName, 0640);
     free(fileName);
     years[0] = currMovie->Year;
     currMovie = currMovie->next;
@@ -251,6 +253,7 @@ void processFile(struct file * file){
             FILE * yearFile = fopen(fileName, "w");
             fprintf(yearFile, "%s\n", currMovie->Title);
             fclose(yearFile);
+            chmod(fileName, 0640);
             free(fileName);
             years[yearCount] = currMovie->Year;
             yearCount += 1;
