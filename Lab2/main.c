@@ -224,7 +224,8 @@ void processFile(struct file * file){
     int years[movieNum];
 
     char * fileName = calloc(30, sizeof(char));
-    &fileName = NULL;
+    //fileName = "null :/";
+    
     sprintf(fileName, "%s/%d.txt", dirName, currMovie->Year);  //funky stuff  
     FILE * yearFile = fopen(fileName, "w");
     fprintf(yearFile, "%s\n", currMovie->Title);
