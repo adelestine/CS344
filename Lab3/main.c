@@ -18,7 +18,11 @@ int getUserInput(){
 
 
 
-
+/*
+ *  This function is the main function
+ *  @return 0
+ *
+*/
 int main()
 {
     getUserInput();
