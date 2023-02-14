@@ -1,7 +1,21 @@
 #include "header.h"
 
+
+int getUserInput(){
+    printf(":");
+    
+
+}
+
+
+
+
+
+
+
 int main()
 {
-    printf("Hello World");
+    getUserInput();
+    
 
 }
