@@ -86,7 +86,7 @@ struct movie *createMovie(char *currLine)
 
     // The first token is the Title
     token = strtok_r(currLine, ",", &saveptr);
-    currMovie->Title = calloc(strlen(token) + 1, sizeof(char));
+    currMovie->Title = calloc(strlen(token) + 1, sizeof(char)); //+1 for null terminator
     strcpy(currMovie->Title, token);
 
     // The next token is the Year
@@ -337,6 +337,10 @@ void findSmallestFile(char * output, struct file * head){
     processFile(smallest);
     strcpy(output, smallest->name);
 }
+/*
+Find the file with the name and return the name
+
+*/
 void findFileWithName(char * output, struct file * head, char * name){
     //find the file with the name and return the name
     struct file * current = head;
@@ -353,6 +357,11 @@ void findFileWithName(char * output, struct file * head, char * name){
     strcpy(output, "File Not Found");
     
 }
+/*
+free all the memory allocated for the linked list
+specificaly the memory allocated for the file names
+return nothing
+*/
 void freeall(struct file * head){
     struct file * current = head;
     while (current != NULL)
