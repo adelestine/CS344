@@ -8,10 +8,20 @@
 int getUserInput(){
     printf(":");
     char input[100];
-    fgets(input, 100, stdin);
+    clearscanf();
+    scanf("%s", input);
     printf("%s", input);
     return 0;
 }
+/*
+ * This function clears the scanf buffer
+ *  @return void
+*/
+void clearscanf(){
+    int c;
+    while((c = getchar()) != '\n' && c != EOF);
+}
+
 
 
 

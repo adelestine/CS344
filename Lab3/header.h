@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 
+void clearscanf();
+int getUserInput();
 
 
 
