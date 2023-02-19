@@ -1,18 +1,38 @@
 {
-  "configurations": [
-    {
-      "name": "windows-gcc-x64",
-      "includePath": [
-        "${workspaceFolder}/**"
-      ],
-      "compilerPath": "gcc",
-      "cStandard": "${default}",
-      "cppStandard": "${default}",
-      "intelliSenseMode": "windows-gcc-x64",
-      "compilerArgs": [
-        ""
-      ]
-    }
-  ],
-  "version": 4
+    "configurations": [
+        {
+            "name": "windows-gcc-x64",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "compilerPath": "gcc",
+            "cStandard": "${default}",
+            "cppStandard": "${default}",
+            "intelliSenseMode": "windows-gcc-x64",
+            "compilerArgs": [
+                ""
+            ]
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "intelliSenseMode": "linux-gcc-x64",
+            "compilerArgs": [
+                "--std=gnu99",
+                "-g",
+                "-o",
+                "out"
+            ],
+            "cStandard": "c99",
+            "compilerPath": "C:/MinGW/bin/gcc.exe"
+        }
+    ],
+    "version": 4
 }
