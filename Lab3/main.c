@@ -6,7 +6,7 @@
  *  
 */
 int getUserInput(struct inputStr * inputStr){
-    printf(": ");
+    printf(":");
     char input[2048];
     fgets(input, 2048, stdin);
     int charInput = strlen(input);
@@ -33,7 +33,7 @@ int getUserInput(struct inputStr * inputStr){
         }
     }
     inputStr->argCount = numArgs+1;
-    printf("%d", numArgs);
+    //printf("%d", numArgs);
     inputStr->args = calloc(numArgs + 1, sizeof(struct Link));
     if (inputStr->args == NULL) {
         // Handle allocation failure
@@ -57,7 +57,7 @@ int getUserInput(struct inputStr * inputStr){
 */
 int setInputFile(struct inputStr * inputStr, int * i){
     int j = *i;
-    char * inputFileName = calloc(inputStr->length, sizeof(char));      // allocate memory for the input file name
+    inputStr->inputFile = calloc(inputStr->length, sizeof(char));      // allocate memory for the input file name
     for (j; j < inputStr->length; j++){                                 // loop through the input
         if (inputStr->input[j-1] == '<' && inputStr->input[j] == ' '){  // check if the previous character is < and the current character is a space
             j = j + 1;
@@ -67,22 +67,15 @@ int setInputFile(struct inputStr * inputStr, int * i){
                     break;
                 }
                 else{
-                    inputFileName[k] = inputStr->input[j];              // add the current character to the file name
+                    inputStr->inputFile[k] = inputStr->input[j];              // add the current character to the file name
                     k = k + 1;
                 }
             }
-            inputStr->inputFile = fopen(inputFileName, "rw"); 
-            free(inputFileName);          // open the file
             break;
         }
         else if (inputStr->input[j-1] == '<' && inputStr->input[j] != ' '){ // check if the previous character is < and the current character is not a space
             printf("Error: No space after <");                              // print error message
         }
-    }
-    if (inputStr->inputFile == NULL)        // check if the file was opened successfully
-    {
-        perror("Error opening file");                   // print error message
-        return(0);
     }
     return 1;
 }
@@ -96,7 +89,7 @@ int setInputFile(struct inputStr * inputStr, int * i){
 */
 int setOutputFile(struct inputStr * inputStr, int * i){
     int j = *i;
-    char * outputFileName = calloc(inputStr->length, sizeof(char));      // allocate memory for the input file name
+    inputStr->outputFile = calloc(inputStr->length, sizeof(char));      // allocate memory for the input file name
     for (j; j < inputStr->length; j++){                                 // loop through the input
         if (inputStr->input[j-1] == '>' && inputStr->input[j] == ' '){  // check if the previous character is < and the current character is a space
             j = j + 1;
@@ -106,22 +99,15 @@ int setOutputFile(struct inputStr * inputStr, int * i){
                     break;
                 }
                 else{
-                    outputFileName[k] = inputStr->input[j];              // add the current character to the file name
+                    inputStr->outputFile[k] = inputStr->input[j];              // add the current character to the file name
                     k = k + 1;
                 }
             }
-            inputStr->outputFile = fopen(outputFileName, "rw"); 
-            free(outputFileName);          // open the file
             break;
         }
         else if (inputStr->input[j-1] == '>' && inputStr->input[j] != ' '){ // check if the previous character is < and the current character is not a space
             printf("Error: No space after <");                              // print error message
         }
-    }
-    if (inputStr->outputFile == NULL)        // check if the file was opened successfully
-    {
-        perror("Error opening file");                   // print error message
-        return(0);
     }
     return 1;
 }
@@ -135,6 +121,7 @@ int setOutputFile(struct inputStr * inputStr, int * i){
  *
 */
 void parseInput(struct inputStr * inputStr){
+    pidReplace(inputStr);
     //parse the input
     int i = 0;
     //check for < > and &
@@ -154,16 +141,17 @@ void parseInput(struct inputStr * inputStr){
         }
         i = i + 1;
     }
-    i = 0  ;
+   
     //read Command
 
-    while (i < inputStr->length && inputStr->input[i] != ' '){
-        //set the command
-        inputStr->command[i] = inputStr->input[i];
-        i = i + 1;
-    }
+    // while (i < inputStr->length && inputStr->input[i] != ' '){
+    //     //set the command
+    //     inputStr->command[i] = inputStr->input[i];
+    //     i = i + 1;
+    // }
     //printf("Command: %s\n", inputStr->command);
     //read args
+     i = 0  ;
     int j = 0;
     int k = 0;
     struct Link * link = inputStr->args;
@@ -195,53 +183,90 @@ void parseInput(struct inputStr * inputStr){
     link->data = arg;
     link->next = NULL;
 
-
+    strcpy(inputStr->command, inputStr->args->data);
     //remove first Arg
     // struct Link * temp = inputStr->args;
     // inputStr->args = inputStr->args->next;
     // free(temp);
-
+    removeEmptyNodes(inputStr->args);
+    
 
 
 }
 
+/*
+ * This function removes empty nodes from the linked list
+ * obtained from chatgpt.
+ * @return 0
+*/
+void removeEmptyNodes(struct Link *head) {
+    struct Link *prev = NULL;
+    struct Link *current = head;
+
+    while (current != NULL) {
+        // check if the current node has empty data
+        if (strlen(current->data) == 0) {
+            // if so, remove it from the list
+            if (prev != NULL) {
+                // if the current node is not the first node, adjust the previous node's next pointer
+                prev->next = current->next;
+                free(current);
+                current = prev->next;
+            } else {
+                // if the current node is the first node, adjust the head pointer
+                head = current->next;
+                free(current);
+                current = head;
+            }
+        } else {
+            // if the current node has non-empty data, move on to the next node
+            prev = current;
+            current = current->next;
+        }
+    }
+}
+
 
 /*
-           ___
-     _..--"\  `|`""--.._
-  .-'       \  |        `'-.
- /           \_|___...----'`\
-|__,,..--""``(_)--..__      |
-'\     _.--'`.I._     ''--..'
-  `''"`,#JGS/_|_\###,.--'`
-    ,#'  _.:`___`:-._'#,
-   #'  ,~'-;(oIo);-'~, '#
-   #   `~-(  |    )=~`  #
-   #       | |_  |      #
-   #       ; ._. ;      #
-   #  _..-;|\ - /|;-._  #
-   #-'   /_ \\_// _\  '-#
- /`#    ; /__\-'__\;    #`\
-;  #\.--|  |O  O   |'-./#  ;
-|__#/   \ _;O__O___/   \#__|
- | #\    [I_[_]__I]    /# |
- \_(#   ;  |O  O   ;   #)_/
-        |  |       |
-        |  ;       |
-        |  |       |
-        ;  |       |
-        |  |       |
-        |  |       ;
-        |  |       |
-        '-.;____..-'
-          |  ||  |
-          |__||__|
-          [__][__]
-        .-'-.||.-'-.
-       (___.'  '.___)
-
-
+ * This function replaces any instances of $$ with the process id
+ * @return 0
 */
+void pidReplace(struct inputStr * inputStr){
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    int pid = getpid();
+    char * pidStr = calloc(10, sizeof(char));
+    sprintf(pidStr, "%d", pid);
+    int pidLength = strlen(pidStr);
+    int inputLength = strlen(inputStr->input);
+    char * newInput = calloc(inputLength + pidLength, sizeof(char));
+    while (i < inputLength){
+        if (inputStr->input[i] == '$' && inputStr->input[i+1] == '$'){
+            //replace with pid
+            for (j; j < i; j++){
+                newInput[k] = inputStr->input[j];
+                k = k + 1;
+            }
+            for (j = 0; j < pidLength; j++){
+                newInput[k] = pidStr[j];
+                k = k + 1;
+            }
+            i = i + 2;
+            j = i;
+        }else{
+            i = i + 1;
+        }
+    }
+    for (j; j < i; j++){
+        newInput[k] = inputStr->input[j];
+        k = k + 1;
+    }
+    inputStr->input = newInput;
+    inputStr->length = strlen(inputStr->input);
+}
+
+
 
 //required built in commands
 //cd
@@ -256,24 +281,32 @@ void parseInput(struct inputStr * inputStr){
  *
 */
 int isBuiltInCommand(struct inputStr * inputStr){
-    if (strcmp(inputStr->command, "cd") == 0){
+    if (inputStr->command[0] == '#'){
+        return 1;
+    } else if (strcmp(inputStr->command, "cd") == 0){
         //change directory
         //printf("cd\n");
-        //printf("Arg: %s\n", inputStr->args->data);
-        if (inputStr->args->data == NULL){
+        if (inputStr->args->next->data == NULL){
             chdir(getenv("HOME"));
         }else{
-            chdir(inputStr->args->data);
+            chdir(inputStr->args->next->data);
         }
         return 1;
     }else if (strcmp(inputStr->command, "exit") == 0){
         //exit
         //printf("exit\n");
-        exit(0);
+        inputStr->isExit = true;
         return 1;
     }else if (strcmp(inputStr->command, "status") == 0){
         //status
         //printf("status\n");
+        //print status
+        int status;
+        if(WIFEXITED(status)){
+            printf("exit value %d\n", WEXITSTATUS(status));
+        }else if(WIFSIGNALED(status)){
+            printf("terminated by signal %d\n", WTERMSIG(status));
+        }
         return 1;
     }else{
         return 0;
@@ -305,84 +338,100 @@ int isBuiltInCommand(struct inputStr * inputStr){
  * 
 */
 int runCommand(struct inputStr * inputStr){
-    printf("->runCommand\n");
-    printf("->Command: %s\n", inputStr->command);
-    //printf("Arg: %s\n", inputStr->args->data);
-    //printf("Arg: %s\n", inputStr->args->next->data);
-    //printf("Arg: %s\n", inputStr->args->next->next->data);
-    //printf("Arg: %s\n", inputStr->args->next->next->next->data);
+    //save current FD
+    int savedFD = dup(1);
 
-    //char * args[inputStr->argCount];
+    // printf("->runCommand\n");
+    // printf("->Number of args: %d\n", inputStr->argCount);
+    // printf("->Command: %s\n", inputStr->command);
+    //printf("->Arg0: %s\n", inputStr->args->data);
     int stat;
-    char * temp = inputStr->command;
-    
-    
-    printf("temp: %s\n", temp);
+    char * args[inputStr->argCount + 1];
+    //char * testArgs[] = {"ls", NULL};
 
-
-
-
-    char *args[] = {"ls", NULL};
-    char *args2[inputStr->argCount];
     //copy args to static array
     int i = 0;
-
     struct Link * link = inputStr->args;
     while (link != NULL){
-        args2[i] = link->data;
+        args[i] = link->data;
         link = link->next;
         i = i + 1;
     }
-    args2[i] = NULL;
+    args[i] = NULL;
+    
     //print args
-    for (int i = 0; i < 3; i++){
-        printf("->Arg0%d: %s\n",i, args[i]);
-        printf("->Arg2%d: %s\n",i, args2[i]);
-    }
-    int childID = fork();
-    // //fork
-    // int stat;
-    // pid_t spawnPid = fork();
+    // for (int i = 0; i < inputStr->argCount+1; i++){
+    //     //printf("->Arg0%d: %s\n",i, testArgs[i]);
+    //     printf("->Arg2.%d: %s\n",i, args[i]);
+    // }
 
+    
+
+
+
+
+    int childID = fork();
+    //if output file is specified
+
+    
+
+
+
+
+    // //fork
     if (childID == 0)
     {
-        printf("=>Child\n");
-        //printf("=>Child PID: %d\n", getpid());
-        //printf("=> inputStr->command: %s\n", inputStr->command);
-        //printf("=> args[0]: %s\n", args[0]);
-        if (execvp(args[0], args) == -1)
-        {
-            printf("=>Child: This should not be seen\n");
-            perror("execvp");
+        //printf("I am the child\n"); //RUNS ONCE
+        //WANT
+
+
+
+        if (inputStr->outputFile != NULL){
+        printf("->outputFile: %s\n", inputStr->outputFile);
+
+        //open file
+        int targetFD = open(inputStr->outputFile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        if (targetFD == -1){
+            printf("Error opening file\n");
             exit(1);
         }
-
-
-    }else{
-        printf("-->Parent\n");
-        // printf("-->Parent PID: %d\n", getpid());
-        // printf("-->Child PID: %d\n", spawnPid);
-        waitpid(-1, &stat, 0);
+        dup2(targetFD, 1);
     }
-    if ( WIFEXITED(stat) )
+    //check for input file
+    if (inputStr->inputFile != NULL){
+        printf("->inputFile: %s\n", inputStr->inputFile);
+
+        //open file
+        int targetFD = open(inputStr->inputFile, O_RDONLY);
+        if (targetFD == -1){
+            printf("Error opening file\n");
+            exit(1);
+        }
+        dup2(targetFD, 0);
+    }
+        if(execvp(inputStr->command, args) == -1)
+        {
+            printf("Error");
+        }
+        exit(1);
+    }
+    else
     {
-        printf("-->exit value %d\n", WEXITSTATUS(stat));
-    }else if (WIFSIGNALED(stat)){
-        printf("-->terminated by signal %d\n", WTERMSIG(stat));
+        //printf("I am the parent\n"); //RUNS ONCE
+        waitpid(-1, &stat, 0); //wait for child to finish
+        //return to saved FD
+        dup2(savedFD, 1);
     }
-
+    // if( WIFEXITED(stat) )
+    // {
+    //     //printf("Child exited with code %d\n", WEXITSTATUS(stat));
+    // }else if( WIFSIGNALED(stat) )
+    // {
+    //     //printf("Child was terminated by signal %d\n", WTERMSIG(stat));
+    // }
     
-    
-    
-
-
-
-
-
-
-    
-    //printf("->spawnPid: %d\n", spawnPid);
-
+    //printf("Only run by the parent\n"); //RUNS ONCE
+    return 0;
 }
 
 
@@ -460,9 +509,22 @@ int main(){
     };
     
 
+
+    while(true){
     getUserInput(&inputStr);
     parseInput(&inputStr);
-    runCommand(&inputStr);
+    if(isBuiltInCommand(&inputStr) != true){
+        runCommand(&inputStr);
+    }
+    if (inputStr.isExit == true)
+    {
+        break;
+    }
+    
+    
+
+    
+    
     
     
 
@@ -474,27 +536,27 @@ int main(){
     //testing
 
     //only print if parent process
-    if(getpid() == 0){
+    // if(getpid() == 0){
     
-    printf("#Input: %s\n", inputStr.input);
-    printf("#Length: %d\n", inputStr.length);
-    printf("#commnad: %s\n", inputStr.command);
-    printf("#isBackground: %d\n", inputStr.isBackground);
+    // printf("#Input: %s\n", inputStr.input);
+    // printf("#Length: %d\n", inputStr.length);
+    // printf("#commnad: %s\n", inputStr.command);
+    // printf("#isBackground: %d\n", inputStr.isBackground);
 
-    //print args
-    for(struct Link * link = inputStr.args; link != NULL; link = link->next){
-        printf("#Arg: %s\n", link->data);
-    }
-    }
+    // //print args
+    // for(struct Link * link = inputStr.args; link != NULL; link = link->next){
+    //     printf("#Arg: %s\n", link->data);
+    // }
+    // }
 
 
     //free the memory
-    if(inputStr.inputFile != NULL){
-        fclose(inputStr.inputFile);
-    }
-    if(inputStr.outputFile != NULL){
-        fclose(inputStr.outputFile);
-    }
+    // if(inputStr.inputFile != NULL){
+    //     fclose(inputStr.inputFile);
+    // }
+    // if(inputStr.outputFile != NULL){
+    //     fclose(inputStr.outputFile);
+    // }
     struct Link * link= inputStr.args;
     while (link != NULL){
         struct Link * temp = link;
@@ -505,5 +567,11 @@ int main(){
     //free(inputStr.args); //invalid free 
     free(inputStr.command);
     free(inputStr.input);
+
+    if (inputStr.isExit == true)
+    {
+        break;
+    }
+    }
 
 }
