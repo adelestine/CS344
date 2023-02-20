@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <fcntl.h>
 
 
 void clearstdin();
@@ -23,8 +24,9 @@ struct inputStr
     char *input;
     int length;
     bool isBackground;
-    FILE *inputFile;
-    FILE *outputFile;
+    bool isExit;
+    char * inputFile;
+    char * outputFile;
     char *command;
     struct Link *args;
     int argCount;
@@ -33,6 +35,8 @@ struct inputStr
 
 int setInputFile(struct inputStr * inputStr, int * i);
 int getUserInput(struct inputStr * inputStr);
+void removeEmptyNodes(struct Link *head);
+void pidReplace(struct inputStr * inputStr);
 
 
 

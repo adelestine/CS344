@@ -13,7 +13,7 @@ int main()
 
     printf("my PID is %d\n", getpid());         //RUNS TWICE
     printf("my child's PID is %d\n", childID);  //RUNS TWICE
-    char *args[] = {"ls", "-l", NULL};
+    char *args[] = {"ls", NULL};
 
 
 
