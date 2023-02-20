@@ -1,6 +1,6 @@
 compile:
 	@echo "Compileing to main.c"
-	gcc --std=gnu99 -g -o output main.c
+	gcc --std=gnu99 -g -o smallsh main.c
 clean:
 	@echo "Cleaning up..."
 	rm -f output

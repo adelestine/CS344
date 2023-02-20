@@ -322,7 +322,7 @@ int runCommand(struct inputStr * inputStr){
 
 
 
-    char *args[] = {"ls", "-l", NULL};
+    char *args[] = {"ls", NULL};
     char *args2[inputStr->argCount];
     //copy args to static array
     int i = 0;
@@ -350,7 +350,7 @@ int runCommand(struct inputStr * inputStr){
         //printf("=>Child PID: %d\n", getpid());
         //printf("=> inputStr->command: %s\n", inputStr->command);
         //printf("=> args[0]: %s\n", args[0]);
-        if (execvp(args2[0], args2) == -1)
+        if (execvp(args[0], args) == -1)
         {
             printf("=>Child: This should not be seen\n");
             perror("execvp");
@@ -384,31 +384,6 @@ int runCommand(struct inputStr * inputStr){
     //printf("->spawnPid: %d\n", spawnPid);
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -454,46 +429,6 @@ int runCommand(struct inputStr * inputStr){
                   {______}     \___________________/     {______}
               SSt |______|_______________________________|______|
 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
