@@ -30,7 +30,7 @@ int main()
     else
     {
         printf("I am the parent\n"); //RUNS ONCE
-        wait(&stat); //wait for child to finish
+        waitpid(-1, &stat, 0); //wait for child to finish
     }
     if( WIFEXITED(stat) )
     {

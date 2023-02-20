@@ -28,11 +28,12 @@ int getUserInput(struct inputStr * inputStr){
     //loop thorugh input and count how many arguments there are
     int numArgs = 0;
     for (int i = 0; i < charInput; i++){
-        if (input[i] == ' ' && input[i+1] != ' ' && input[i+1] != '<' && input[i+1] != '>' && input[i+1] != '&'){
+        if ((input[i] == ' ') && input[i+1] != ' ' && input[i+1] != '<' && input[i+1] != '>' && input[i+1] != '&'){ 
             numArgs = numArgs + 1;
         }
     }
-    inputStr->argCount = numArgs;
+    inputStr->argCount = numArgs+1;
+    printf("%d", numArgs);
     inputStr->args = calloc(numArgs + 1, sizeof(struct Link));
     if (inputStr->args == NULL) {
         // Handle allocation failure
@@ -179,6 +180,7 @@ void parseInput(struct inputStr * inputStr){
             link->next = calloc(1, sizeof(struct Link));
             link = link->next;
             k = 0;
+            j = j +1;
         }else{
             
         }
@@ -310,22 +312,76 @@ int runCommand(struct inputStr * inputStr){
     //printf("Arg: %s\n", inputStr->args->next->next->data);
     //printf("Arg: %s\n", inputStr->args->next->next->next->data);
 
-    char * args[inputStr->argCount];
+    //char * args[inputStr->argCount];
+    int stat;
+    char * temp = inputStr->command;
+    
+    
+    printf("temp: %s\n", temp);
+
+
+
+
+    char *args[] = {"ls", "-l", NULL};
+    char *args2[inputStr->argCount];
     //copy args to static array
     int i = 0;
+
     struct Link * link = inputStr->args;
     while (link != NULL){
-        args[i] = link->data;
+        args2[i] = link->data;
         link = link->next;
         i = i + 1;
     }
+    args2[i] = NULL;
+    //print args
+    for (int i = 0; i < 3; i++){
+        printf("->Arg0%d: %s\n",i, args[i]);
+        printf("->Arg2%d: %s\n",i, args2[i]);
+    }
+    int childID = fork();
+    // //fork
+    // int stat;
+    // pid_t spawnPid = fork();
+
+    if (childID == 0)
+    {
+        printf("=>Child\n");
+        //printf("=>Child PID: %d\n", getpid());
+        //printf("=> inputStr->command: %s\n", inputStr->command);
+        //printf("=> args[0]: %s\n", args[0]);
+        if (execvp(args2[0], args2) == -1)
+        {
+            printf("=>Child: This should not be seen\n");
+            perror("execvp");
+            exit(1);
+        }
 
 
-    //fork
-    pid_t spawnPid = fork();
-    //ecec
-    execvp(inputStr->command, args);
-    printf("->spawnPid: %d\n", spawnPid);
+    }else{
+        printf("-->Parent\n");
+        // printf("-->Parent PID: %d\n", getpid());
+        // printf("-->Child PID: %d\n", spawnPid);
+        waitpid(-1, &stat, 0);
+    }
+    if ( WIFEXITED(stat) )
+    {
+        printf("-->exit value %d\n", WEXITSTATUS(stat));
+    }else if (WIFSIGNALED(stat)){
+        printf("-->terminated by signal %d\n", WTERMSIG(stat));
+    }
+
+    
+    
+    
+
+
+
+
+
+
+    
+    //printf("->spawnPid: %d\n", spawnPid);
 
 }
 
@@ -454,7 +510,7 @@ int main(){
     //get user input
     // -> handle for commnads < > and & 
     // only read & as the last character
-
+    
 
 
     //combo of chatGPT and Copilot
@@ -481,6 +537,10 @@ int main(){
 
 
     //testing
+
+    //only print if parent process
+    if(getpid() == 0){
+    
     printf("#Input: %s\n", inputStr.input);
     printf("#Length: %d\n", inputStr.length);
     printf("#commnad: %s\n", inputStr.command);
@@ -490,7 +550,7 @@ int main(){
     for(struct Link * link = inputStr.args; link != NULL; link = link->next){
         printf("#Arg: %s\n", link->data);
     }
-
+    }
 
 
     //free the memory
