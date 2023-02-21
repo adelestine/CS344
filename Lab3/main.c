@@ -285,8 +285,8 @@ int isBuiltInCommand(struct inputStr * inputStr){
         return 1;
     } else if (strcmp(inputStr->command, "cd") == 0){
         //change directory
-        //printf("cd\n");
-        if (inputStr->args->next->data == NULL){
+        printf("cd\n");
+        if (inputStr->args->next == NULL){
             chdir(getenv("HOME"));
         }else{
             chdir(inputStr->args->next->data);
@@ -364,7 +364,10 @@ int runCommand(struct inputStr * inputStr){
     //     //printf("->Arg0%d: %s\n",i, testArgs[i]);
     //     printf("->Arg2.%d: %s\n",i, args[i]);
     // }
+    
 
+    //check to make sure not in backround
+    if()
     
 
 
