@@ -13,7 +13,7 @@
 #include <netinet/in.h>
 
 //define statements
-#define MAX_MESSAGE_SIZE = 140010
+#define MAXLINE = 140010
 #define SERVER_ALLOW_MESSAGE = "connected"
 #define SERVER_BAD_PORT_MESSAGE = "bad port"
 #define MAX_CLIENTS = 5
@@ -27,15 +27,18 @@ struct adress{
 };
 
 //function prototypes
-void setupAdress(struct adress *address, char *host, char *port);
-int getFile(char *filename, const char *buffer);
+void setupAdress(struct sockaddr_in *address, char *host, int port);
+int getFile(const char *filename, char *buffer);
 int sendFile(int socket, char *filename, int* size);
 int readFile(int socket, char *filename, int* size);
 
 int charToInt(char IntIn);
 char intToChar(int IntIn);
-void encode(char *buffer, int size);
-void decode(char *buffer, int size);
+void encode(char *inBuffer, char *outBuffer, char *key);
+void decode(char *inBuffer, char *outBuffer, char *key);
+
+int readSocket(int socket, char *buffer, int size);
+int sendSocket(int socket, char *buffer, int *size);
 
 
 
