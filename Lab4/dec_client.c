@@ -53,7 +53,7 @@ int main(int argc, char *argv[]){
     }
     int grandlen = keyChars + encodedChars +2;
     buffer = calloc(grandlen, sizeof(char));
-    if(readFile(socketFD, buffer, &grandlen) == -1){
+    if(readSocket(socketFD, buffer, grandlen) == -1){
         fprintf(stderr, "Error: could not read from server");
         close(socketFD);
         free(buffer);
@@ -76,7 +76,7 @@ int main(int argc, char *argv[]){
         exit(1);
     }
     memset(buffer, 0, strlen(buffer));
-    if (readFile(socketFD, buffer, &grandlen) == -1){
+    if (readSocket(socketFD, buffer, grandlen) == -1){
         fprintf(stderr, "Error: could not read from server");
         close(socketFD);
         free(buffer);
@@ -104,14 +104,14 @@ int main(int argc, char *argv[]){
 
     grandlen = keyChars + 1;
     char * decodedText = calloc(grandlen, sizeof(char));
-    if(readFile(socketFD, decodedText, &grandlen) == -1){
+    if(readSocket(socketFD, decodedText, grandlen) == -1){
         fprintf(stderr, "Error: could not read from server");
         close(socketFD);
         free(buffer);
         free(decodedText);
         exit(1);
     }
-    prinf(decodedText);
+    printf(decodedText);
     free(buffer);
     free(decodedText);
     close(socketFD);

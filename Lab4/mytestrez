@@ -1,0 +1,56 @@
+==90974== Memcheck, a memory error detector
+==90974== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==90974== Using Valgrind-3.16.1 and LibVEX; rerun with -h for copyright info
+==90974== Command: ./p5testscript-1 50223 50077
+==90974== 
+#Initializing - Cleaning up - ignore Operation Not Permitted errors
+#Note: this script requires that the current directory (.) be in your PATH in ~/.bashrc
+
+#-----------------------------------------
+#START OF GRADING SCRIPT
+#keygen 20 > key20
+#5 POINTS: key20 must exist
+key20 exists!
+
+#-----------------------------------------
+#5 POINTS: Number of characters in key20, should be 21:
+21 key20
+
+#-----------------------------------------
+#keygen 70000 > key70000
+#5 POINTS: Number of characters in key70000, should be 70001:
+70001 key70000
+
+#-----------------------------------------
+#enc_client plaintext1 key20 $encport
+#10 POINTS: Should return error about too-short key
+error: cipher text is smaller than plain text
+#-----------------------------------------
+#enc_client plaintext1 key70000 $encport
+#20 POINTS: Should return encrypted version of plaintext1
+==90974== 
+==90974== Process terminating with default action of signal 2 (SIGINT)
+==90974==    at 0x48EC208: kill (syscall-template.S:120)
+==90974==    by 0x1881BB: ??? (in /usr/bin/bash)
+==90974==    by 0x188317: termsig_handler (in /usr/bin/bash)
+==90974==    by 0x169C0F: ??? (in /usr/bin/bash)
+==90974==    by 0x16AC47: wait_for (in /usr/bin/bash)
+==90974==    by 0x156447: execute_command_internal (in /usr/bin/bash)
+==90974==    by 0x15684F: execute_command (in /usr/bin/bash)
+==90974==    by 0x13D9E3: reader_loop (in /usr/bin/bash)
+==90974==    by 0x13AF8F: main (in /usr/bin/bash)
+==90974== 
+==90974== HEAP SUMMARY:
+==90974==     in use at exit: 67,857 bytes in 613 blocks
+==90974==   total heap usage: 2,904 allocs, 2,291 frees, 196,190 bytes allocated
+==90974== 
+==90974== LEAK SUMMARY:
+==90974==    definitely lost: 0 bytes in 0 blocks
+==90974==    indirectly lost: 0 bytes in 0 blocks
+==90974==      possibly lost: 0 bytes in 0 blocks
+==90974==    still reachable: 67,857 bytes in 613 blocks
+==90974==         suppressed: 0 bytes in 0 blocks
+==90974== Rerun with --leak-check=full to see details of leaked memory
+==90974== 
+==90974== For lists of detected and suppressed errors, rerun with: -s
+==90974== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

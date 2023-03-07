@@ -54,7 +54,7 @@ int main(int argc, char const *argv[])
             char decodedText[MAXLINE];
             int bufferLen = 0;
             
-            if(readFile(establishedConnectionFD, buffer, clientConfirmSize) == -1){
+            if(readSocket(establishedConnectionFD, buffer, clientConfirmSize) == -1){
                 fprintf(stderr, "Error: could not read from server");
                 close(establishedConnectionFD);
                 exit(1);
@@ -97,10 +97,6 @@ int main(int argc, char const *argv[])
                 close(establishedConnectionFD);
                 exit(1);
             }
-            free(buffer);
-            free(key);
-            free(encodedText);
-            free(decodedText);
             close(establishedConnectionFD);
             exit(0);
         }

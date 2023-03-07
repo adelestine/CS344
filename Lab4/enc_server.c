@@ -52,9 +52,10 @@ int main(int argc, char* argv[]){
             // child process
             // setup messages
             char buffer[MAXLINE] = {0, };
-            char* encodedMes[MAXLINE];
-            char* key[MAXLINE] = {0, };
-            char* decodedMes[MAXLINE] = {0, };
+            char encodedMes[MAXLINE];
+            char plainMes[MAXLINE] = {0, };
+            char key[MAXLINE] = {0, };
+            //char decodedMes[MAXLINE] = {0, };
             int bufferLen = MAXLINE;
 
             // respond to connecting client
@@ -105,10 +106,10 @@ int main(int argc, char* argv[]){
             //process
             char* remain;
             char* token = strtok_r(buffer, FILE_DELIM, &remain);
-            strcpy(encodedMes, token);
+            strcpy(plainMes, token);
             token = strtok_r(NULL, FILE_DELIM, &remain);
             strcpy(key, token);
-            encode(decodedMes, encodedMes, key );
+            encode(plainMes, encodedMes, key );
             int encodedLen = strlen(encodedMes);
 
 

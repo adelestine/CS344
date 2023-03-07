@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
     struct sockaddr_in servaddr;
     // check for correct number of arguments
     if (argc < 3){
-        fprintf(stderr, "usage: %s <IPaddress> <port>", argv[0]);
+        fprintf(stderr, "usage: %s <key> <port>", argv[0]);
         exit(1); // exit with error if not enough arguments
     }
 
@@ -32,10 +32,15 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
+
+
+
+
+
     //store contents of file into internal buffer
     char plainText[MAXLINE] = {0, };
     char cipherText[MAXLINE] = {0, };
-    int ptchars = getFile(argv[2], plainText); // get the number of characters in the file and load
+    int ptchars = getFile(argv[1], plainText); // get the number of characters in the file and load
     int ctchars = getFile(argv[2], cipherText); // get the number of characters in the file and load
 
     // check getfile for errors
@@ -49,13 +54,14 @@ int main(int argc, char *argv[])
         close(sockfd);
         exit(1);
     }
+    //printf("ptchars: %d ctchars: %d ", ptchars, ctchars);
     // make sure the plaintext is smaller than the cipher text
     if (ptchars > ctchars){
         fprintf(stderr, "error: cipher text is smaller than plain text");
         close(sockfd);
         exit(1);
     }
-
+//fprintf(stderr ,"ptchars: %d ctchars: %d", ptchars, ctchars);
     // send the plaintext to the server
     int confimlen = strlen(ENC_CONFIRM);
     if (sendSocket(sockfd, ENC_CONFIRM, &confimlen) < 0){
@@ -70,6 +76,8 @@ int main(int argc, char *argv[])
         close(sockfd);
         exit(1);
     }
+    
+    fprintf(stdout, "end?");
     int readlen = strlen(SERVER_ALLOW_MESSAGE);
     if (readSocket(sockfd, buffer, readlen) < 0){
         fprintf(stderr, "error reading from socket");
@@ -81,7 +89,7 @@ int main(int argc, char *argv[])
         close(sockfd);
         exit(2);
     }
-
+    
     //send the file length
     memset(buffer, 0, strlen(buffer));
     sprintf(buffer, "%d", filelen);
@@ -91,7 +99,7 @@ int main(int argc, char *argv[])
         free(buffer);
         exit(1);
     }
-
+    
     if(strcmp(buffer, SERVER_BAD_PORT_MESSAGE) == 0 || strcmp(buffer, SERVER_ALLOW_MESSAGE) != 0){
         fprintf(stderr, "error: server did not allow connection on port %s", argv[3]);
         close(sockfd);
@@ -129,6 +137,7 @@ int main(int argc, char *argv[])
         free(response);
         exit(1);
     }
+    
     printf(response);
     free(buffer);
     free(response);
