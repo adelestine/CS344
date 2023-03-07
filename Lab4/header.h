@@ -11,13 +11,18 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <netinet/in.h>
+#include <strings.h>
 
 //define statements
-#define MAXLINE = 140010
-#define SERVER_ALLOW_MESSAGE = "connected"
-#define SERVER_BAD_PORT_MESSAGE = "bad port"
-#define MAX_CLIENTS = 5
-#define FILE_DELIM = "/n"
+#define MAXLINE 140010
+#define SERVER_ALLOW_MESSAGE "connected"
+#define SERVER_BAD_PORT_MESSAGE "bad port"
+#define MAX_CLIENTS 5
+#define FILE_DELIM "/n"
+#define ENC_CONFIRM "enc"
+#define ENC_SVR "encsvr"
+#define DEC_CONFIRM "dec"
+#define DEC_SVR "decsvr"
 
 
 //structs
