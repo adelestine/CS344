@@ -76,6 +76,7 @@ int main(int argc, char const *argv[])
                 close(establishedConnectionFD);
                 exit(1);
             }
+            
             printf("S: sent 'confirm' to client\n");
             fflush(stdout);
 
