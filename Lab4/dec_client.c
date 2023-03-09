@@ -1,6 +1,8 @@
 #include "header.h"
 
 int main(int argc, char *argv[]){
+    //announce filename
+    fprintf(stderr, "--dec_client.c"); // for dec_client.c use "--"
     //check for correct number of arguments
     if(argc < 3){
         fprintf(stderr, "Usage: %s plaintext key port"  , argv[0]);

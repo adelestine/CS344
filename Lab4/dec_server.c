@@ -2,6 +2,8 @@
 
 int main(int argc, char const *argv[])
 {
+    //announce filename
+    //fprintf(stderr, "++dec_server.c\n"); // for dec_server.c use "++"
     struct sockaddr_in serverAddress, clientAddress;
     pid_t pid;
     int listenSocketFD, establishedConnectionFD, portNumber, charsRead, pidStatus;

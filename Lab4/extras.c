@@ -107,33 +107,40 @@ void decode(char *inBuffer, char *outBuffer, char *key){
 }
 
 //reads all data from a socket
-int readSocket(int socket, char *buffer, int size){
+int readSocket(int socket, char *buffer, int size){ //possibly not working???
     int total = 0;
     int n = 0;
+    char temp[MAXLINE] = {0, };
+    //int i = 0;
+    //fprintf(stderr, "size: %d\n", size);
     while (total < size){
         //n = read(socket, buffer + total, size - total); // must leave space for the null terminator
-        n = recv(socket, buffer + total, size - total, 0);
-        if (n < 0){
-            fprintf(stderr, "Error: could not read from socket\n");
-            return -1;
-        }
+        //getting suck in here
+        n = recv(socket, temp, MAXLINE - 1, 0);// 
+        if (n == -1){break;}
+        strcat(buffer, temp);
+        memset(temp, 0 , MAXLINE);
         total += n;
+
     }
-    return total;
+    //fprintf(stderr, "got out\n");
+    return n == -1 ? -1 : 0;
 }
 
 //sends all data to a socket
 int sendSocket(int socket, char *buffer, int *size){
-        int total = 0;
+    int total = 0;
     int n = 0;
+    int bytesRemining = *size;
+    //fprintf(stderr, "size: %d\n", *size);
     while (total < *size){
-        n = send(socket, buffer + total, *size - total, 0);
-        if (n < 0){
-            fprintf(stderr, "Error: could not send to socket\n");
-            return -1;
-        }
+        n = send(socket, buffer + total, bytesRemining, 0);
+            if (n == -1){
+                //fprintf(stderr, "Error: could not send to socket\n");
+                break;
+            }
         total += n;
     }
     *size = total;
-    return total;
+    return n == -1 ? -1 : 0;
 }
