@@ -118,6 +118,7 @@ int readSocket(int socket, char *buffer, int size){ //possibly not working???
         //getting suck in here
         n = recv(socket, temp, MAXLINE - 1, 0);// 
         if (n == -1){break;}
+        if(strcmp(temp, SERVER_BAD_PORT_MESSAGE) == 0){break;}
         strcat(buffer, temp);
         memset(temp, 0 , MAXLINE);
         total += n;

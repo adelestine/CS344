@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 
 //fprintf(stderr ,"ptchars: %d ctchars: %d", ptchars, ctchars);
     // send the plaintext to the server
-    printf("C: Sending enc_confirm\n");
+    //printf("C: Sending enc_confirm\n");
     fflush(stdout);
 
     int confimlen = strlen(ENC_CONFIRM);
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    printf("C: Sent enc_confirm\n");
+    //printf("C: Sent enc_confirm\n");
     fflush(stdout);
     //fprintf(stderr, "->sent confirmation\n");
     //fprintf(stderr, "->passTest7\n");
@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
    
     
     
-    printf("C: Waiting for 'connected'\n");
+    //printf("C: Waiting for 'connected'\n");
     fflush(stdout);
 
     if (readSocket(sockfd, buffer, readlen) < 0){ // wait for the server to respond
@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    printf("C: Reccived 'connected'\n");
+    //printf("C: Reccived 'connected'\n");
     fflush(stdout);
 
     //fprintf(stderr, "->passTest9\n");
@@ -134,11 +134,11 @@ int main(int argc, char *argv[])
     }
     //fprintf(stderr, "->passTest10\n");
     
-    printf("C: Sending length\n");
+    //printf("C: Sending length\n");
     //send the file length
     memset(buffer, 0, strlen(buffer));
     sprintf(buffer, "%d", filelen);
-    printf("C: Sending length: %s" , buffer);
+    //printf("C: Sending length: %s" , buffer);
     fflush(stdout);
     if (sendSocket(sockfd, buffer, &filelen) < 0){
         fprintf(stderr, "error sending file length");
@@ -147,11 +147,11 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    printf("C: Sent length\n");
+    ////printf("C: Sent length\n");
     fflush(stdout);
     memset(buffer, 0, strlen(buffer));
 
-    printf("C: Reading 'confirm' #2\n");
+    //printf("C: Reading 'confirm' #2\n");
     fflush(stdout);
     if(readSocket(sockfd, buffer, readlen) < 0){ // wait for the server to respond
         fprintf(stderr, "error reading from socket");
@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    printf("C: Reccived 'confirm' #2\n");
+    //printf("C: Reccived 'confirm' #2\n");
     fflush(stdout);
 
     //fprintf(stderr, "->passTest11\n");
@@ -174,7 +174,7 @@ int main(int argc, char *argv[])
     }
     //fprintf(stderr, "->passTest12\n");
 
-    printf("C: Sending text\n");
+    //printf("C: Sending text\n");
     fflush(stdout);
     //send the file contents
     //fprintf(stderr, "sending file contents\n");
@@ -190,7 +190,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    printf("C: Sent text\n");
+    //printf("C: Sent text\n");
     fflush(stdout);
 
     fflush(stdout);

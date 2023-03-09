@@ -58,14 +58,31 @@ ${echo}
 ${echo} "#-----------------------------------------"
 ${echo} '#enc_client plaintext1 key20 $encport'
 ${echo} "#10 POINTS: Should return error about too-short key"
-echo ./enc_client plaintext1 key20 $encport
+./enc_client plaintext1 key20 $encport
 ${echo}
 ${echo} "#-----------------------------------------"
 ${echo} '#enc_client plaintext1 key70000 $encport'
 ${echo} "#20 POINTS: Should return encrypted version of plaintext1"
 ./enc_client plaintext1 key70000 $encport
 ${echo}
-
+${echo} '#-----------------------------------------'
+${echo} '#enc_client plaintext1 key70000 $encport > ciphertext1'
+./enc_client plaintext1 key70000 $encport > ciphertext1
+${echo} "#10 POINTS: ciphertext1 must exist"
+[ -s ciphertext1 ] || rm -f ciphertext1 
+if [ -f ciphertext1 ]; then ${echo} 'ciphertext1 exists!'; else ${echo} 'ciphertext1 DOES NOT EXIST'; fi 
+${echo}
+${echo} '#-----------------------------------------'
+${echo} '#10 POINTS: ciphertext1 must be same number of chars as source'
+${echo} '#wc -m plaintext1'
+wc -m plaintext1
+${echo} '#Should be same: wc -m ciphertext1'
+wc -m ciphertext1
+${echo}
+${echo} '#-----------------------------------------'
+${echo} '#5 POINTS: ciphertext1 should look encrypted'
+cat ciphertext1
+${echo}
 
 #Clean up
 ${echo}
@@ -75,9 +92,9 @@ killall -q -u $USER dec_client
 killall -q -u $USER dec_server
 killall -q -u $USER enc_client
 killall -q -u $USER enc_server
-rm -f ciphertext*
-rm -f plaintext*_*
-rm -f key20
-rm -f key70000
+${echo} rm -f ciphertext*
+${echo}rm -f plaintext*_*
+${echo}rm -f key20
+${echo}rm -f key70000
 ${echo}
 ${echo} '#SCRIPT COMPLETE'
