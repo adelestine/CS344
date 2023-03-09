@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     int readlen = strlen(SERVER_ALLOW_MESSAGE);
     // check for correct number of arguments
     if (argc < 3){
-        fprintf(stderr, "usage: %s <key> <port>", argv[0]);
+        fprintf(stderr, "usage: %s <plaintext> <key> <port>", argv[0]);
         exit(1); // exit with error if not enough arguments
     }
     //fprintf(stderr, "->passTest1\n");
@@ -34,6 +34,8 @@ int main(int argc, char *argv[])
     bzero(&servaddr, sizeof(servaddr)); // this is stupid and I love it, it sets all the bytes in the struct to 0
 
     //setupAdress(&servaddr, argv[1], argv[3]); // set up the address struct where argv[1] is the host and argv[3] is the port
+    //fprintf(stderr, "argv[3]: %s", argv[2]);
+
     setupAdress(&servaddr, "localhost", atoi(argv[3])); // host will always be localhost for this assignment
 
     // set the socket options to reuse the address
@@ -85,12 +87,18 @@ int main(int argc, char *argv[])
 
 //fprintf(stderr ,"ptchars: %d ctchars: %d", ptchars, ctchars);
     // send the plaintext to the server
+    printf("C: Sending enc_confirm\n");
+    fflush(stdout);
+
     int confimlen = strlen(ENC_CONFIRM);
     if (sendSocket(sockfd, ENC_CONFIRM, &confimlen) < 0){
         fprintf(stderr, "error sending confirmation");
         close(sockfd);
         exit(1);
     }
+
+    printf("C: Sent enc_confirm\n");
+    fflush(stdout);
     //fprintf(stderr, "->sent confirmation\n");
     //fprintf(stderr, "->passTest7\n");
     
@@ -106,12 +114,17 @@ int main(int argc, char *argv[])
    
     
     
+    printf("C: Waiting for 'connected'\n");
+    fflush(stdout);
 
     if (readSocket(sockfd, buffer, readlen) < 0){ // wait for the server to respond
         fprintf(stderr, "1error reading from socket");
         close(sockfd);
         exit(1);
     }
+
+    printf("C: Reccived 'connected'\n");
+    fflush(stdout);
 
     //fprintf(stderr, "->passTest9\n");
     if (strcmp(buffer, SERVER_BAD_PORT_MESSAGE) == 0 || strcmp(buffer, SERVER_ALLOW_MESSAGE) != 0){
@@ -121,18 +134,38 @@ int main(int argc, char *argv[])
     }
     //fprintf(stderr, "->passTest10\n");
     
+    printf("C: Sending length\n");
     //send the file length
     memset(buffer, 0, strlen(buffer));
     sprintf(buffer, "%d", filelen);
+    printf("C: Sending length: %s" , buffer);
+    fflush(stdout);
     if (sendSocket(sockfd, buffer, &filelen) < 0){
         fprintf(stderr, "error sending file length");
         close(sockfd);
         free(buffer);
         exit(1);
     }
+
+    printf("C: Sent length\n");
+    fflush(stdout);
+    memset(buffer, 0, strlen(buffer));
+
+    printf("C: Reading 'confirm' #2\n");
+    fflush(stdout);
+    if(readSocket(sockfd, buffer, readlen) < 0){ // wait for the server to respond
+        fprintf(stderr, "error reading from socket");
+        close(sockfd);
+        free(buffer);
+        exit(1);
+    }
+
+    printf("C: Reccived 'confirm' #2\n");
+    fflush(stdout);
+
     //fprintf(stderr, "->passTest11\n");
-    // removed from below || strcmp(buffer, SERVER_ALLOW_MESSAGE) != 0
-    if(strcmp(buffer, SERVER_BAD_PORT_MESSAGE) == 0 ){
+
+    if(strcmp(buffer, SERVER_BAD_PORT_MESSAGE) == 0 || strcmp(buffer, SERVER_ALLOW_MESSAGE) != 0){
         fprintf(stderr, "error2: server did not allow connection on port %s\n", argv[3]);
         fprintf(stderr, "buffer: %s, SERVER_BAD_PORT_MESSAGE: %s, SERVER_ALLOW_MESSAGE: %s\n", buffer, SERVER_BAD_PORT_MESSAGE, SERVER_ALLOW_MESSAGE);
         close(sockfd);
@@ -141,9 +174,11 @@ int main(int argc, char *argv[])
     }
     //fprintf(stderr, "->passTest12\n");
 
+    printf("C: Sending text\n");
+    fflush(stdout);
     //send the file contents
-    fprintf(stderr, "sending file contents\n");
-    memset( buffer, 0, strlen(buffer));
+    //fprintf(stderr, "sending file contents\n");
+    memset(buffer, 0, strlen(buffer));
     strcat(buffer, plainText);
     strcat(buffer, FILE_DELIM);
     strcat(buffer, cipherText);
@@ -154,11 +189,19 @@ int main(int argc, char *argv[])
         free(buffer);
         exit(1);
     }
+
+    printf("C: Sent text\n");
+    fflush(stdout);
+
+    fflush(stdout);
     
 
     // read the response from the server
     readlen = ptchars + 1;
     response = calloc(readlen +1 , sizeof(char));
+    //bzero(response, readlen +1);
+    memset(response, 0, readlen +1);
+    memset(buffer, 0, strlen(buffer));
     // if (response == NULL){
     //     fprintf(stderr, "error allocating memory");
     //     close(sockfd);
@@ -166,8 +209,8 @@ int main(int argc, char *argv[])
     //     exit(1);
     // }
     //fprintf(stderr, "->passTest14\n");
-    fprintf(stderr, "readlen: %d\n", readlen);
-    fprintf(stderr, "socketfd: %d\n", sockfd);
+    //fprintf(stderr, "readlen: %d\n", readlen);
+    //fprintf(stderr, "socketfd: %d\n", sockfd);
 
 
     //sleep(5);
@@ -175,7 +218,9 @@ int main(int argc, char *argv[])
     //fprintf(stderr, "response: %s\n", response);
 
     if (readSocket(sockfd, response, readlen) == -1){//hang GAURENTEED!!!
-        fprintf(stderr, "2error reading from socket\n");
+        fprintf(stderr, "C:2error reading from socket\n");
+        
+
         close(sockfd);
         free(buffer);
         free(response);
@@ -183,12 +228,12 @@ int main(int argc, char *argv[])
         
     }
 
-    fprintf(stderr, "->passTest15\n");
+    //fprintf(stderr, "->passTest15\n");
     
     printf(response);
-    free(buffer);
+    //free(buffer);
     free(response);
     close(sockfd);
-    fprintf(stderr, "->done\n");
+    //fprintf(stderr, "->done\n");
     return 0;
 }

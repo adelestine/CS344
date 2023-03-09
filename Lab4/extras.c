@@ -134,7 +134,7 @@ int sendSocket(int socket, char *buffer, int *size){
     int bytesRemining = *size;
     //fprintf(stderr, "size: %d\n", *size);
     while (total < *size){
-        n = send(socket, buffer + total, bytesRemining, 0);
+        n = send(socket, &buffer[total], bytesRemining, 0);
             if (n == -1){
                 //fprintf(stderr, "Error: could not send to socket\n");
                 break;

@@ -76,12 +76,19 @@ int main(int argc, char* argv[]){
 
             // respond to connecting client
             //fprintf(stderr, ">>waiting for confirmation\n");
+            printf("S: Waiting for enc_confirm\n");
+            fflush(stdout);
+
             if(readSocket(establishedConnectionFD, buffer, strlen(ENC_CONFIRM)) < 0){ //getting stuck here
                 // perror("ERROR reading from socket");
                 fprintf(stderr, "ERROR reading from socket");
                 close(establishedConnectionFD);
                 exit(1);
             }
+            printf("S: Reccived enc_confirm\n");
+            fflush(stdout);
+
+
             //fprintf(stderr, ">>confirmation received\n");
             if (strcmp(buffer, ENC_CONFIRM) != 0){
                 int n = strlen(SERVER_BAD_PORT_MESSAGE);
@@ -95,6 +102,9 @@ int main(int argc, char* argv[]){
             }
             // checks passed
             //send responce to client
+
+            printf("S: Sending 'connected'\n");
+            fflush(stdout);
             if(sendSocket(establishedConnectionFD, SERVER_ALLOW_MESSAGE, &allowlen) < 0){
                 //perror("ERROR writing to socket");
                 fprintf(stderr, "ERROR writing to socket");
@@ -104,29 +114,56 @@ int main(int argc, char* argv[]){
             memset(buffer, 0, MAXLINE);
             charsRead = 0;
 
+            printf("S: Sent 'connected'\n");
+            fflush(stdout);
+
+            printf("S: Reading file len\n");
+            fflush(stdout);
            // fprintf(stderr, ">>waiting for file length\n");
             // get file length
             while((charsRead = recv(establishedConnectionFD, buffer, MAXLINE, 0)) == 0);
             bufferLen = atoi(buffer);
             charsRead = 0;
            // fprintf(stderr, ">>file length received: %d\n", bufferLen);
+           
+            printf("S: Reccived file len into buffer\n");
+            printf("S: buffer:%s\n", buffer);
+            fflush(stdout);
 
+            memset(buffer, 0, MAXLINE);
+
+            printf("S: buffer:%s\n", buffer);
+
+            printf("S: Sending 'confirm' #2\n");
+            fflush(stdout);
             // proceed to get file
+
+
             if(sendSocket(establishedConnectionFD, SERVER_ALLOW_MESSAGE, &allowlen) < 0){
                 //perror("ERROR writing to socket");
                 fprintf(stderr, "ERROR writing to socket");
                 close(establishedConnectionFD);
                 exit(1);
             }
+            
             memset(buffer, 0, MAXLINE);
+            printf("S: Sent 'confirm' #2\n");
+            fflush(stdout);
 
+
+            printf("S: Reading text\n");
+            fflush(stdout);
             // get plaintext and key
+           
             if(readSocket(establishedConnectionFD, buffer, bufferLen) < 0){
                 //perror("ERROR reading from socket");
                 fprintf(stderr, "ERROR reading from socket");
                 close(establishedConnectionFD);
                 exit(1);
             }
+
+            printf("S: Read text\n");
+            fflush(stdout);
             //returning the wrong message
 
             //fprintf(stderr, ">>file received: %s\n", buffer);
@@ -137,6 +174,10 @@ int main(int argc, char* argv[]){
             strcpy(plainMes, token);
             token = strtok_r(NULL, FILE_DELIM, &remain);
             strcpy(key, token);
+
+            //fprintf(stderr, ">>plaintext: %s\n", plainMes);
+            //fprintf(stderr, ">>key: %s\n", key);
+
             encode(plainMes, encodedMes, key );
             //fprintf(stderr, ">>encoded message: %s\n", encodedMes);
             int encodedLen = strlen(encodedMes);
@@ -144,14 +185,15 @@ int main(int argc, char* argv[]){
 
 
             // send encoded message
-            int subEncodedLen = encodedLen;
+            int subEncodedLen = strlen(encodedMes);
             //fprintf(stderr, ">>encoded message length2: %d\n", subEncodedLen);
-            fprintf(stderr, ">>sending encoded message: %s, length %d\n", encodedMes, subEncodedLen);
+            //fprintf(stderr, ">>sending encoded message: %s, length %d\n", encodedMes, subEncodedLen);
 
 
 
 
-            
+            //fprintf(stderr, ">>sending encoded message: %s, length %d\n", encodedMes, subEncodedLen);
+
             if(sendSocket(establishedConnectionFD, encodedMes, &subEncodedLen) < 0){ // FIX SEND SOCKET!!!
                 //perror("ERROR writing to socket");
                 fprintf(stderr, "ERROR writing to socket");

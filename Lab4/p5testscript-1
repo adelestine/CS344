@@ -58,7 +58,7 @@ ${echo}
 ${echo} "#-----------------------------------------"
 ${echo} '#enc_client plaintext1 key20 $encport'
 ${echo} "#10 POINTS: Should return error about too-short key"
-./enc_client plaintext1 key20 $encport
+echo ./enc_client plaintext1 key20 $encport
 ${echo}
 ${echo} "#-----------------------------------------"
 ${echo} '#enc_client plaintext1 key70000 $encport'
