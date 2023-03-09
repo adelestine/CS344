@@ -89,6 +89,7 @@ int main(int argc, char *argv[]){
     //send file length
     memset(buffer, 0, strlen(buffer));
     sprintf(buffer, "%d", grandlen);
+    
     printf("C: sending file length to server\n");
     fflush(stdout);
 
