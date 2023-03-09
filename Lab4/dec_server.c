@@ -8,7 +8,7 @@ int main(int argc, char const *argv[])
     pid_t pid;
     int listenSocketFD, establishedConnectionFD, portNumber, charsRead, pidStatus;
     int confirmSize = strlen(SERVER_ALLOW_MESSAGE);
-    int clientConfirmSize = strlen(DEC_SVR);
+    int clientConfirmSize = strlen(DEC_CONFIRM);
     //check for correct number of arguments
     if(argc < 2){
         fprintf(stderr, "Usage: %s  port"  , argv[0]);
@@ -55,7 +55,7 @@ int main(int argc, char const *argv[])
             char encodedText[MAXLINE] = {0, };
             char decodedText[MAXLINE];
             int bufferLen = 0;
-            printf("S: read from client");
+            printf("S: read from client\n");
             fflush(stdout);
             if(readSocket(establishedConnectionFD, buffer, clientConfirmSize) == -1){
                 fprintf(stderr, "Error: could not read from server");
