@@ -133,9 +133,9 @@ int main(int argc, char *argv[]){
     }
     printf("C: sent encoded text to server\n");
     fflush(stdout);
-    grandlen = encodedChars + 1;
+    grandlen = keyChars + 1;
     char * decodedText = calloc(grandlen, sizeof(char));
-
+    
     printf("C: reading decoded text from server\n");
     fflush(stdout);
     if(readSocket(socketFD, decodedText, grandlen) == -1){
