@@ -10,10 +10,13 @@
 
 
 #define LINE_SEP '\n'
+#define PLUS_SIGN "++"
+#define SIZE 80
+#define CHAR_OUT '^'
 
-struct Buffer
+struct eLetter
 {
-    char *data;
+    char data[1000];
     int size;
 };
 
